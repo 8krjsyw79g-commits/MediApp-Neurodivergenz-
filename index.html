@@ -1,0 +1,1080 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#F59E0B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="mediApp Neurodivergenz">
+<link rel="manifest" href="manifest.webmanifest">
+<title>mediApp Neurodivergenz (privat)</title>
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#FFF8E8; --panel:#FFFFFF; --panel2:#FFF5D8; --text:#4F3B1E; --muted:#8D6E3E;
+  --border:#F0D7A0; --accent:#F59E0B; --accent2:#14B8A6; --danger:#C2410C; --warn:#B45309;
+  --dose10:#D8BF77; --dose20:#F5B342; --dose30:#F28C28; --dose40:#0EA5A1;
+  --shadow:0 4px 18px rgba(237,170,43,.14);
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#2A1D10; --panel:#352516; --panel2:#42301D; --text:#FFF7EA; --muted:#E4CFA7;
+    --border:#6E532D; --accent:#FDBA36; --accent2:#5EEAD4; --danger:#FDB0A7; --warn:#FCD34D;
+    --dose10:#D7C17F; --dose20:#F6BB58; --dose30:#F59E43; --dose40:#4FD1C8;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{min-height:100vh}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{max-width:1180px;margin:auto;padding:14px}
+header{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px}
+h1{font-size:clamp(1.45rem,3vw,2.2rem);line-height:1.12;margin:0 0 6px}
+.subtitle{color:var(--muted);max-width:850px;line-height:1.45}
+.version{color:var(--muted);font-size:.82rem;white-space:nowrap}
+.notice{border:1px solid var(--border);background:var(--panel2);border-radius:12px;padding:10px 12px;margin:12px 0 16px;line-height:1.45;font-size:.92rem}
+.grid{display:grid;gap:14px}
+.controls{grid-template-columns:minmax(0,1.35fr) minmax(280px,.85fr)}
+@media(max-width:820px){.controls{grid-template-columns:1fr}.app{padding:12px}}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:15px;box-shadow:var(--shadow)}
+.card h2,.card h3{margin:0 0 8px}
+.kicker{color:var(--muted);font-size:.85rem}
+.big{font-size:2rem;font-weight:750;letter-spacing:-.02em}
+.row{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.range{width:100%;accent-color:var(--accent);min-height:34px}
+.scale{display:flex;justify-content:space-between;color:var(--muted);font-size:.76rem}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{min-height:52px;padding:10px 15px;border-radius:14px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:650}
+.pill.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,var(--panel));font-weight:700}
+.segment{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.segment button{min-height:52px}
+fieldset{border:0;padding:0;margin:0}
+legend{font-weight:700;margin-bottom:8px}
+label{font-weight:600}
+input[type=time],select{min-height:50px;border:1px solid var(--border);border-radius:12px;padding:10px 12px;background:var(--panel);color:var(--text)}
+.chart-card{padding:10px 10px 4px}
+.chart-head{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;padding:4px 4px 8px}
+.badges{display:flex;gap:6px;flex-wrap:wrap}
+.badge{border:1px solid var(--border);border-radius:999px;padding:5px 8px;color:var(--muted);font-size:.75rem}
+.chart-scroll{overflow-x:auto}
+svg{display:block;min-width:760px;width:100%;height:auto}
+.metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:760px){.metrics{grid-template-columns:1fr}}
+.metric .value{font-size:1.65rem;font-weight:750;margin-top:4px}
+.metric .small{font-size:.84rem;color:var(--muted);line-height:1.4}
+.target-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+@media(max-width:760px){.target-grid{grid-template-columns:1fr}}
+.calc-result{padding:10px 12px;background:var(--panel2);border:1px solid var(--border);border-radius:10px;line-height:1.45}
+.warn{color:var(--warn);font-weight:650}
+.danger{color:var(--danger);font-weight:650}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.action{min-height:50px;border:1px solid var(--border);border-radius:14px;background:var(--panel);color:var(--text);padding:10px 14px;font-weight:650}
+.action.primary{border-color:var(--accent);background:var(--accent);color:white}
+details{border-top:1px solid var(--border);margin-top:12px;padding-top:10px}
+summary{cursor:pointer;font-weight:700}
+footer{margin:16px 0 6px;color:var(--muted);font-size:.8rem;line-height:1.5}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.78rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.dot{width:12px;height:3px;border-radius:3px;display:inline-block}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+.obs-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media(max-width:860px){.obs-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.obs-grid{grid-template-columns:1fr}}
+.field label{display:block;font-size:.86rem;margin-bottom:5px}
+.field input[type="number"],.field input[type="text"],.field input[type="date"],.field input[type="time"],.field select,.field textarea{
+  width:100%;min-height:44px;border:1px solid var(--border);border-radius:9px;padding:8px 10px;background:var(--panel);color:var(--text)
+}
+.field textarea{min-height:82px;resize:vertical}
+.rating{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+.rating input[type="range"]{width:100%;accent-color:var(--accent)}
+.rating-output{min-width:2.2em;text-align:right;font-weight:750}
+.subcard{border:1px solid var(--border);border-radius:11px;padding:12px;background:var(--panel2)}
+.sidefx{display:grid;grid-template-columns:1.25fr minmax(150px,.75fr);gap:10px;align-items:center}
+@media(max-width:520px){.sidefx{grid-template-columns:1fr}}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px}
+.log-table{border-collapse:collapse;width:100%;min-width:1620px;font-size:.78rem}
+.log-table th,.log-table td{padding:8px 9px;border-bottom:1px solid var(--border);vertical-align:top;text-align:left;white-space:nowrap}
+.log-table th{background:var(--panel2);position:sticky;top:0;z-index:1}
+.log-table td.notes{white-space:normal;min-width:240px;max-width:360px}
+.icon-btn{border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:8px;min-height:36px;padding:5px 9px}
+.help{font-size:.78rem;color:var(--muted);line-height:1.4}
+
+
+.analytics-periods{display:flex;gap:6px;flex-wrap:wrap}
+.analytics-periods button{min-height:38px;padding:6px 11px}
+.analytics-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}
+@media(max-width:900px){.analytics-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.analytics-kpis{grid-template-columns:1fr}}
+.analytics-kpi{border:1px solid var(--border);border-radius:10px;padding:10px;background:var(--panel2)}
+.analytics-kpi .n{font-size:1.35rem;font-weight:760;margin-top:3px}
+.analytics-chart-wrap{overflow-x:auto;margin-top:12px}
+.analytics-chart{display:block;width:100%;min-width:690px;height:auto}
+.fx-bars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+@media(max-width:620px){.fx-bars{grid-template-columns:1fr}}
+.fx-item{border:1px solid var(--border);border-radius:10px;padding:10px;background:var(--panel2)}
+.fx-track{height:8px;border-radius:999px;background:var(--border);overflow:hidden;margin-top:7px}
+.fx-fill{height:100%;background:var(--accent2);width:0}
+
+
+#planningSection,#selfObservation,#analyticsSection{scroll-margin-top:18px}
+.journey{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 14px}
+@media(max-width:820px){.journey{grid-template-columns:1fr}}
+.journey-card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--border);border-radius:18px;padding:14px;box-shadow:var(--shadow)}
+.journey-step{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:999px;background:var(--accent);color:white;font-weight:800;margin-bottom:8px}
+.journey-title{font-weight:760;margin-bottom:4px}
+.journey-sub{color:var(--muted);font-size:.86rem;line-height:1.45;min-height:2.6em}
+.journey-summary{margin:9px 0 10px;font-size:.9rem;line-height:1.45}
+.sun-highlight{background:var(--panel2);border-radius:14px;padding:10px 12px}
+.quickbar{position:sticky;bottom:10px;z-index:35;margin-top:14px}
+.quickbar-inner{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:9px;box-shadow:var(--shadow)}
+.quickbar button{min-height:54px;border-radius:14px;border:1px solid var(--accent);background:var(--accent);color:white;font-weight:750;padding:8px 4px;font-size:.92rem;white-space:nowrap}
+.quickbar .accent{background:var(--accent);color:white;border-color:var(--accent)}
+.table-collapsible summary{font-weight:700;cursor:pointer;padding:4px 0}
+.table-collapsible[open] summary{margin-bottom:10px}
+
+
+@media(max-width:430px){
+  .quickbar button{font-size:.84rem;padding:8px 2px}
+  .journey-card .actions{grid-template-columns:1fr 1fr}
+  .big{font-size:1.8rem}
+}
+
+
+.initiator-line{margin-top:8px;font-size:.92rem;color:var(--muted)}
+.initiator-line strong{color:var(--text)}
+.app-slogan{margin-top:8px;max-width:900px;font-size:1rem;line-height:1.45;font-weight:700;color:#0F6F68;font-style:italic}
+@media(max-width:430px){
+  .initiator-line{font-size:.86rem}
+  .app-slogan{font-size:.94rem;line-height:1.4}
+}
+
+
+.notice{font-size:.86rem;line-height:1.4}
+.badges .badge{font-weight:700}
+@media(max-width:430px){
+  .notice{font-size:.82rem}
+  #selfObservation .small.muted{line-height:1.35}
+}
+
+</style>
+</head>
+<body>
+<main class="app">
+<header>
+  <div>
+    <h1>mediApp Neurodivergenz <span class="small muted">(privat)</span></h1>
+    <div class="subtitle">iPhone-optimierte private Planungs-, Selbstbeobachtungs- und Dokumentationshilfe zur ELVANSE Medikation. Die Kurven bilden einen vereinfachten pharmakokinetischen Verlauf nur zur Orientierung ab – keine Dosierungsanleitung.</div>
+    <div class="initiator-line">Produktinitiator: <strong>Björn Dröscher</strong></div>
+    <div class="app-slogan">„Neurodivergent ist der Mensch anders geschaffen - niemals schlechter, allerdings sehr oft besser!“</div>
+  </div>
+  <div class="version">Version 1.3.5 · 14.09.2026</div>
+</header>
+
+<div class="notice">
+  <strong>Privatanwendung:</strong> Nur zur persönlichen Orientierung und Dokumentation. Keine medizinische Empfehlung, keine Rechtswirkung. Änderungen von Dosis oder Einnahmezeit nur in ärztlicher Abstimmung.
+</div>
+
+
+<section class="journey" id="todayJourney">
+  <div class="journey-card">
+    <div class="journey-step">1</div>
+    <div class="journey-title">Heute planen</div>
+    <div class="journey-sub">Einnahme, Dosis und Zielzeit festlegen.</div>
+    <div id="journeyPlanSummary" class="journey-summary sun-highlight">—</div>
+    <button id="journeyPlanBtn" type="button" class="action primary" style="width:100%">Plan öffnen</button>
+  </div>
+  <div class="journey-card">
+    <div class="journey-step">2</div>
+    <div class="journey-title">Beobachten & notieren</div>
+    <div class="journey-sub">Wirkung und Nebenwirkungen kurz erfassen.</div>
+    <div id="journeyObsSummary" class="journey-summary sun-highlight">Tagesbeobachtung kurz erfassen.</div>
+    <button id="journeyObsBtn" type="button" class="action primary" style="width:100%">Eintrag öffnen</button>
+  </div>
+  <div class="journey-card">
+    <div class="journey-step">3</div>
+    <div class="journey-title">Verlauf & Export</div>
+    <div class="journey-sub">Verlauf prüfen und CSV exportieren.</div>
+    <div id="journeyTrendSummary" class="journey-summary sun-highlight">Verlauf und Export direkt erreichbar.</div>
+    <div class="actions" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <button id="journeyTrendBtn" type="button" class="action primary">Verlauf</button>
+      <button id="journeyCsvBtn" type="button" class="action primary">Export</button>
+    </div>
+  </div>
+</section>
+
+<section class="grid controls" id="planningSection">
+  <div class="card">
+    <div class="row">
+      <div>
+        <div class="kicker">Einnahmezeit</div>
+        <div id="intakeDisplay" class="big">08:00</div>
+      </div>
+      <div style="text-align:right">
+        <div class="kicker">Ausgewählte Dosis</div>
+        <div id="doseDisplay" class="big">20 mg</div>
+      </div>
+    </div>
+
+    <label for="intakeSlider" style="display:block;margin-top:10px">Einnahmezeit verschieben · 15-Minuten-Schritte</label>
+    <input id="intakeSlider" class="range" type="range" min="0" max="1425" step="15" value="480">
+    <div class="scale"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:45</span></div>
+
+    <div class="pills" style="margin-top:10px" id="quickTimes" aria-label="Schnellauswahl Einnahmezeit">
+      <button class="pill" type="button" data-time="360">06:00</button>
+      <button class="pill" type="button" data-time="420">07:00</button>
+      <button class="pill active" type="button" data-time="480">08:00</button>
+      <button class="pill" type="button" data-time="540">09:00</button>
+      <button class="pill" type="button" data-time="600">10:00</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <fieldset>
+      <legend>Dosis</legend>
+      <div class="segment" id="doseButtons">
+        <button class="pill" type="button" data-dose="10">10 mg</button>
+        <button class="pill active" type="button" data-dose="20">20 mg</button>
+        <button class="pill" type="button" data-dose="30">30 mg</button>
+        <button class="pill" type="button" data-dose="40">40 mg</button>
+      </div>
+    </fieldset>
+
+    <fieldset style="margin-top:14px">
+      <legend>Aufnahme-Modell</legend>
+      <div class="segment" id="mealButtons">
+        <button class="pill active" type="button" data-meal="fasted">Nüchtern</button>
+        <button class="pill" type="button" data-meal="fed">Fettreiche Mahlzeit</button>
+      </div>
+      <div class="small muted" style="margin-top:8px">Für die Modellkurve wird Tmax mit ca. 3,8 h (nüchtern) bzw. ca. 4,7 h (fettreiche Mahlzeit) angesetzt.</div>
+    </fieldset>
+  </div>
+</section>
+
+<section class="card chart-card" style="margin-top:14px">
+  <div class="chart-head">
+    <div>
+      <h2 style="font-size:1.1rem;margin:0">24-Stunden-Verlauf</h2>
+      <div class="small muted">Uhrzeitachse 00–24 Uhr · alle vier Dosen zum Vergleich, Auswahl hervorgehoben</div>
+    </div>
+    <div class="badges">
+      <span class="badge" id="badgeTmax">Tmax ≈ 3 h 48 min</span>
+      <span class="badge">t½ Dexamfetamin ≈ 11 h</span>
+      <span class="badge">Herstellerangabe ≈ 13 h Wirkung</span>
+    </div>
+  </div>
+
+  <div class="chart-scroll">
+    <svg id="chart" viewBox="0 0 1000 430" role="img" aria-label="24-Stunden-Modellverlauf der relativen Dexamfetamin-Exposition"></svg>
+  </div>
+
+  <div class="legend" style="padding:0 6px 8px">
+    <span><i class="dot" style="background:var(--dose10)"></i>10 mg</span>
+    <span><i class="dot" style="background:var(--dose20)"></i>20 mg</span>
+    <span><i class="dot" style="background:var(--dose30)"></i>30 mg</span>
+    <span><i class="dot" style="background:var(--dose40)"></i>40 mg</span>
+    <span>· ausgewählte Dosis = kräftige Linie</span>
+  </div>
+</section>
+
+<section class="grid metrics" style="margin-top:14px">
+  <div class="card metric">
+    <div class="kicker">Einnahme</div>
+    <div id="mIntake" class="value">08:00</div>
+    <div class="small">Startpunkt des Modellverlaufs</div>
+  </div>
+  <div class="card metric">
+    <div class="kicker">Modelliertes Tmax</div>
+    <div id="mPeak" class="value">11:48</div>
+    <div class="small" id="mPeakText">ca. 3 h 48 min nach Einnahme</div>
+  </div>
+  <div class="card metric">
+    <div class="kicker">+ 13 Stunden</div>
+    <div id="m13" class="value">21:00</div>
+    <div class="small">Orientierungsmarke aus der Gebrauchsinformation</div>
+  </div>
+</section>
+
+<section class="grid target-grid" style="margin-top:14px">
+  <div class="card">
+    <h3>Zielzeit prüfen</h3>
+    <div class="row" style="align-items:end">
+      <div>
+        <label for="targetTime">Zeitpunkt mit Wirkungsbedarf</label><br>
+        <input id="targetTime" type="time" value="18:00" step="900">
+      </div>
+      <div style="text-align:right">
+        <div class="kicker">Relativ zum Peak dieser Dosis</div>
+        <div id="targetPct" class="big">—</div>
+      </div>
+    </div>
+    <div id="targetDetail" class="calc-result" style="margin-top:12px" aria-live="polite"></div>
+  </div>
+
+  <div class="card">
+    <h3>Rückwärts rechnen</h3>
+    <div class="small muted">Mathematische Orientierung: Wann müsste die Einnahme liegen, damit die Modellkurve am Zielzeitpunkt auf der abfallenden Seite einen bestimmten Anteil ihres Peaks erreicht?</div>
+    <div class="row" style="margin-top:10px;align-items:end">
+      <div>
+        <label for="desiredPct">Gewünschter Modellwert</label><br>
+        <select id="desiredPct">
+          <option value="75">75 %</option>
+          <option value="50" selected>50 %</option>
+          <option value="25">25 %</option>
+        </select>
+      </div>
+      <button id="calcReverse" type="button" class="action primary">Berechnen</button>
+    </div>
+    <div id="reverseResult" class="calc-result" style="margin-top:12px" aria-live="polite">Zielzeit und Prozentwert wählen und berechnen.</div>
+  </div>
+</section>
+
+
+<section class="card" style="margin-top:14px" id="selfObservation">
+  <div class="row">
+    <div>
+      <h3>Selbstbeobachtung & Tagesdokumentation</h3>
+      <div class="small muted">Beim Speichern werden Einnahmezeit, Dosis, Aufnahme-Modell, Tmax, +13-h-Marke, Zielzeit und Modellwert automatisch dem jeweiligen Tag zugeordnet.</div>
+    </div>
+    <div class="badges"><span class="badge">Lokal</span><span class="badge">Tageweise</span><span class="badge">CSV</span></div>
+  </div>
+
+  <div class="obs-grid" style="margin-top:14px">
+    <div class="field"><label for="obsDate">Datum</label><input id="obsDate" type="date"></div>
+    <div class="field"><label for="feltOnset">Wirkungseintritt empfunden</label><input id="feltOnset" type="time" step="300"></div>
+    <div class="field"><label for="feltPeak">Wirkungsgipfel empfunden</label><input id="feltPeak" type="time" step="300"></div>
+    <div class="field"><label for="feltFade">Nachlassen empfunden</label><input id="feltFade" type="time" step="300"></div>
+    <div class="field"><label for="weightKg">Gewicht kg <span class="muted">(optional)</span></label><input id="weightKg" type="number" inputmode="decimal" min="30" max="250" step="0.1" placeholder="z. B. 82,5"></div>
+    <div class="field"><label for="pulse">Puls / min <span class="muted">(optional)</span></label><input id="pulse" type="number" inputmode="numeric" min="30" max="220" step="1" placeholder="z. B. 72"></div>
+    <div class="field"><label for="bpSys">Blutdruck syst. mmHg <span class="muted">(optional)</span></label><input id="bpSys" type="number" inputmode="numeric" min="70" max="250" step="1" placeholder="z. B. 125"></div>
+    <div class="field"><label for="bpDia">Blutdruck diast. mmHg <span class="muted">(optional)</span></label><input id="bpDia" type="number" inputmode="numeric" min="40" max="160" step="1" placeholder="z. B. 80"></div>
+  </div>
+
+  <div class="obs-grid" style="margin-top:14px">
+    <div class="subcard">
+      <label for="effectOverall">Gesamtwirkung im Alltag · 0–10</label>
+      <div class="rating"><span class="muted">0</span><input id="effectOverall" type="range" min="0" max="10" step="1" value="5"><output id="effectOverallOut" class="rating-output">5</output></div>
+      <div class="help">0 = keine · 10 = sehr gute Unterstützung</div>
+    </div>
+    <div class="subcard">
+      <label for="focusRating">Fokus / Konzentration · 0–10</label>
+      <div class="rating"><span class="muted">0</span><input id="focusRating" type="range" min="0" max="10" step="1" value="5"><output id="focusRatingOut" class="rating-output">5</output></div>
+      <div class="help">Subjektive Tagesbewertung.</div>
+    </div>
+    <div class="subcard">
+      <label for="selfControlRating">Steuerbarkeit / innere Ruhe · 0–10</label>
+      <div class="rating"><span class="muted">0</span><input id="selfControlRating" type="range" min="0" max="10" step="1" value="5"><output id="selfControlRatingOut" class="rating-output">5</output></div>
+      <div class="help">Subjektive Tagesbewertung.</div>
+    </div>
+  </div>
+
+  <div class="subcard" style="margin-top:14px">
+    <div style="font-weight:700;margin-bottom:8px">Drei sehr häufige Nebenwirkungen</div>
+    <div class="small muted" style="margin-bottom:10px">0 = nicht vorhanden · 1 = leicht · 2 = mittel · 3 = stark.</div>
+    <div class="sidefx"><label for="seAppetite">Verminderter Appetit</label><select id="seAppetite"><option value="0">0 – nicht vorhanden</option><option value="1">1 – leicht</option><option value="2">2 – mittel</option><option value="3">3 – stark</option></select></div>
+    <div class="sidefx" style="margin-top:8px"><label for="seSleep">Schlafstörungen / Einschlafprobleme</label><select id="seSleep"><option value="0">0 – nicht vorhanden</option><option value="1">1 – leicht</option><option value="2">2 – mittel</option><option value="3">3 – stark</option></select></div>
+    <div class="sidefx" style="margin-top:8px"><label for="seDryMouth">Mundtrockenheit</label><select id="seDryMouth"><option value="0">0 – nicht vorhanden</option><option value="1">1 – leicht</option><option value="2">2 – mittel</option><option value="3">3 – stark</option></select></div>
+  </div>
+
+  <div class="field" style="margin-top:14px"><label for="obsNotes">Tagesnotiz</label><textarea id="obsNotes" placeholder="z. B. Schlaf der Vornacht, Kaffee, Mahlzeiten, Stress, besondere Termine, subjektives Anfluten/Nachlassen …"></textarea></div>
+
+  <div class="row" style="margin-top:12px">
+    <div class="small muted" id="obsContext">Aktuelle Planer-Einstellung wird beim Speichern übernommen.</div>
+    <div class="actions">
+      <button id="saveObservation" class="action primary" type="button">Tagesdatensatz speichern</button>
+      <button id="exportCsv" class="action" type="button">Dokumentation als CSV exportieren</button>
+      <button id="clearObservations" class="action" type="button">Dokumentation leeren</button>
+    </div>
+  </div>
+  <div id="obsStatus" class="small muted" style="margin-top:8px" aria-live="polite"></div>
+
+  <div style="margin-top:14px">
+    <details class="table-collapsible">
+      <summary><span class="row"><span>Tageweise Dokumentation</span><span id="obsCount" class="small muted">0 Datensätze</span></span></summary>
+      <div class="table-wrap">
+      <table class="log-table">
+        <thead><tr>
+          <th>Datum</th><th>Einnahme</th><th>Dosis</th><th>Aufnahme</th><th>Tmax Modell</th><th>+13 h</th><th>Zielzeit</th><th>Modell an Zielzeit</th>
+          <th>Wirkungseintritt empf.</th><th>Peak empf.</th><th>Nachlassen empf.</th><th>Gesamtwirkung</th><th>Fokus</th><th>Steuerbarkeit</th>
+          <th>Appetit ↓</th><th>Schlafstörung</th><th>Mundtrockenheit</th><th>Gewicht kg</th><th>Puls</th><th>RR sys/dia</th><th>Notiz</th><th></th>
+        </tr></thead>
+        <tbody id="obsTableBody"></tbody>
+      </table>
+    </div>
+    </details>
+  </div>
+
+  <div class="notice" style="margin:14px 0 0">
+    <strong>Wichtig:</strong> Neue oder starke Beschwerden medizinisch abklären.
+  </div>
+</section>
+
+
+<section class="card" style="margin-top:14px" id="analyticsSection">
+  <div class="row">
+    <div>
+      <h3 style="margin-bottom:4px">Verlaufsauswertung</h3>
+      <div class="small muted">Kompakte Übersicht aus den gespeicherten Tagesdatensätzen. Pro Datum wird jeweils der zuletzt gespeicherte Datensatz verwendet.</div>
+    </div>
+    <div class="analytics-periods" id="analyticsPeriods" aria-label="Auswertungszeitraum">
+      <button type="button" class="pill active" data-days="7">7 Tage</button>
+      <button type="button" class="pill" data-days="14">14 Tage</button>
+      <button type="button" class="pill" data-days="30">30 Tage</button>
+    </div>
+  </div>
+
+  <div id="analyticsEmpty" class="notice" style="margin:12px 0 0">
+    Für die Auswertung werden mindestens zwei dokumentierte Tage benötigt.
+  </div>
+
+  <div id="analyticsContent" hidden>
+    <div class="analytics-kpis">
+      <div class="analytics-kpi">
+        <div class="kicker">Dokumentierte Tage</div>
+        <div id="akDays" class="n">—</div>
+      </div>
+      <div class="analytics-kpi">
+        <div class="kicker">Ø Gesamtwirkung</div>
+        <div id="akEffect" class="n">—</div>
+        <div class="small muted">Skala 0–10</div>
+      </div>
+      <div class="analytics-kpi">
+        <div class="kicker">Ø Fokus</div>
+        <div id="akFocus" class="n">—</div>
+        <div class="small muted">Skala 0–10</div>
+      </div>
+      <div class="analytics-kpi">
+        <div class="kicker">Ø Wirkungseintritt</div>
+        <div id="akOnset" class="n">—</div>
+        <div class="small muted">nach Einnahme, soweit dokumentiert</div>
+      </div>
+    </div>
+
+    <div class="analytics-chart-wrap">
+      <svg id="analyticsChart" class="analytics-chart" viewBox="0 0 940 290" role="img" aria-label="Verlauf der subjektiven Bewertungen über dokumentierte Tage"></svg>
+    </div>
+
+    <div class="fx-bars">
+      <div class="fx-item">
+        <div class="row"><span>Verminderter Appetit</span><strong id="fxAppetiteVal">—</strong></div>
+        <div class="fx-track"><div id="fxAppetiteBar" class="fx-fill"></div></div>
+      </div>
+      <div class="fx-item">
+        <div class="row"><span>Schlafstörungen</span><strong id="fxSleepVal">—</strong></div>
+        <div class="fx-track"><div id="fxSleepBar" class="fx-fill"></div></div>
+      </div>
+      <div class="fx-item">
+        <div class="row"><span>Mundtrockenheit</span><strong id="fxDryVal">—</strong></div>
+        <div class="fx-track"><div id="fxDryBar" class="fx-fill"></div></div>
+      </div>
+    </div>
+
+    <div id="analyticsHint" class="small muted" style="margin-top:10px"></div>
+  </div>
+</section>
+
+<section class="card" style="margin-top:14px">
+  <div class="row">
+    <div>
+      <h3>Lokale Einstellungen</h3>
+      <div class="small muted">Einstellungen werden – sofern verfügbar – lokal auf diesem Gerät gespeichert.</div>
+    </div>
+    <div class="actions">
+      <button id="saveBtn" class="action" type="button">Lokal speichern</button>
+      <button id="exportBtn" class="action" type="button">Einstellungen exportieren</button>
+      <button id="resetBtn" class="action" type="button">Zurücksetzen</button>
+    </div>
+  </div>
+  <div id="storageStatus" class="small muted" style="margin-top:8px" aria-live="polite"></div>
+
+  <details>
+    <summary>Modell und Quellen</summary>
+    <p class="small">Das Modell verwendet eine vereinfachte Bateman-Funktion mit einer Eliminationshalbwertszeit von 11 Stunden. Die Absorptionskonstante wird so gewählt, dass der Modell-Peak bei ca. 3,8 Stunden (nüchtern) bzw. 4,7 Stunden (nach fettreicher Mahlzeit) liegt. Die Dosis skaliert im Modell nur die relative Exposition. Daraus wird keine proportionale klinische Wirkung abgeleitet.</p>
+    <p class="small"><strong>Quellen:</strong> Takeda, Fachinformation Elvanse® 20/30/40/50/60/70 mg Hartkapseln, Stand Juni 2026: Dexamfetamin-Tmax ca. 3,8 h nüchtern, ca. 4,7 h nach fettreicher Mahlzeit; Halbwertszeit Dexamfetamin ca. 11 h. Takeda, Gebrauchsinformation Elvanse®, Stand Juni 2026: lang wirkendes Arzneimittel, über einen ca. 13-stündigen Zeitraum stetig wirksam.</p>
+  </details>
+</section>
+
+
+<div class="quickbar" aria-label="Schnellzugriff">
+  <div class="quickbar-inner">
+    <button id="qbTop" type="button">Heute</button>
+    <button id="qbPlan" type="button">Plan</button>
+    <button id="qbObs" type="button">Eintrag</button>
+    <button id="qbCsv" type="button" class="accent">Export</button>
+  </div>
+</div>
+
+<footer>
+  Private Anwendung ohne Rechtswirkung. Keine Diagnose, Verordnung oder individuelle Einnahmeempfehlung. Kein Medizinprodukt. Produktinitiator: Björn Dröscher. Kernfunktion offline nutzbar.
+</footer>
+</main>
+
+<script>
+
+(() => {
+"use strict";
+window.addEventListener("error", function(){ return true; }, true);
+window.addEventListener("unhandledrejection", function(e){ if(e && e.preventDefault) e.preventDefault(); });
+const inEmbeddedPreview = (window.self !== window.top) || /onedrive|1drv|sharepoint/i.test(String(location.hostname) + " " + String(location.href));
+
+const qs = s => document.querySelector(s);
+const qsa = s => [...document.querySelectorAll(s)];
+
+const state = {
+  intakeMin: 480,
+  dose: 20,
+  meal: "fasted",
+  target: "18:00"
+};
+
+const KE = Math.log(2) / 11;
+const TM = { fasted: 3.8, fed: 4.7 };
+const KA = { fasted: 0.6945830102038822, fed: 0.5064229959921379 };
+const COLORS = {10:"var(--dose10)",20:"var(--dose20)",30:"var(--dose30)",40:"var(--dose40)"};
+
+const pad = n => String(n).padStart(2,"0");
+function fmtClock(minutes){
+  let m = Math.round(minutes) % 1440;
+  if(m < 0) m += 1440;
+  return `${pad(Math.floor(m/60))}:${pad(m%60)}`;
+}
+function parseClock(s){
+  const p = String(s||"").split(":").map(Number);
+  if(p.length !== 2 || p.some(Number.isNaN)) return 1080;
+  return Math.min(1439,Math.max(0,p[0]*60+p[1]));
+}
+function raw(t, meal){
+  if(t < 0) return 0;
+  const ka = KA[meal];
+  return Math.exp(-KE*t)-Math.exp(-ka*t);
+}
+function ownRel(t, meal){
+  const tm = TM[meal];
+  const p = raw(tm, meal);
+  if(p <= 0 || t < 0) return 0;
+  return Math.max(0, raw(t,meal)/p);
+}
+function doseRel40(t,dose,meal){ return ownRel(t,meal)*(dose/40); }
+function elapsedToClock(clockMin){
+  let d = clockMin - state.intakeMin;
+  if(d < 0) d += 1440;
+  return d/60;
+}
+function selectedMealText(){ return state.meal === "fed" ? "fettreiche Mahlzeit" : "nüchtern"; }
+
+function setActive(){
+  qsa("#quickTimes [data-time]").forEach(b => b.classList.toggle("active",Number(b.dataset.time)===state.intakeMin));
+  qsa("#doseButtons [data-dose]").forEach(b => b.classList.toggle("active",Number(b.dataset.dose)===state.dose));
+  qsa("#mealButtons [data-meal]").forEach(b => b.classList.toggle("active",b.dataset.meal===state.meal));
+}
+
+function renderSummary(){
+  qs("#intakeDisplay").textContent = fmtClock(state.intakeMin);
+  qs("#doseDisplay").textContent = `${state.dose} mg`;
+  qs("#mIntake").textContent = fmtClock(state.intakeMin);
+  qs("#mPeak").textContent = fmtClock(state.intakeMin + TM[state.meal]*60);
+  qs("#mPeakText").textContent = `ca. ${Math.floor(TM[state.meal])} h ${Math.round((TM[state.meal]%1)*60)} min nach Einnahme (${selectedMealText()})`;
+  qs("#m13").textContent = fmtClock(state.intakeMin + 13*60);
+  qs("#badgeTmax").textContent = `Tmax ≈ ${Math.floor(TM[state.meal])} h ${Math.round((TM[state.meal]%1)*60)} min`;
+  qs("#targetTime").value = state.target;
+  setActive();
+}
+
+function svgEl(name,attrs,text){
+  const e = document.createElementNS("http://www.w3.org/2000/svg",name);
+  Object.entries(attrs||{}).forEach(([k,v])=>e.setAttribute(k,v));
+  if(text!=null)e.textContent=text;
+  return e;
+}
+
+function renderChart(){
+  const svg=qs("#chart");
+  while(svg.firstChild)svg.removeChild(svg.firstChild);
+  const W=1000,H=430,L=64,R=22,T=32,B=62;
+  const PW=W-L-R, PH=H-T-B;
+  const x=h=>L+(h/24)*PW;
+  const y=v=>T+PH-v*PH;
+  const css=name=>getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const border=css("--border"), muted=css("--muted"), text=css("--text"), accent=css("--accent");
+  const panel2=css("--panel2");
+
+  svg.appendChild(svgEl("rect",{x:L,y:T,width:PW,height:PH,rx:8,fill:panel2}));
+
+  for(let h=0;h<=24;h++){
+    const major=h%2===0;
+    svg.appendChild(svgEl("line",{x1:x(h),y1:T,x2:x(h),y2:T+PH,stroke:border,"stroke-width":major?1:.6,opacity:major?.9:.45}));
+    if(major) svg.appendChild(svgEl("text",{x:x(h),y:H-28,"text-anchor":"middle","font-size":11,fill:muted},String(h)));
+  }
+  [0,.25,.5,.75,1].forEach(v=>{
+    svg.appendChild(svgEl("line",{x1:L,y1:y(v),x2:L+PW,y2:y(v),stroke:border,"stroke-width":1,opacity:.7}));
+    svg.appendChild(svgEl("text",{x:L-9,y:y(v)+4,"text-anchor":"end","font-size":11,fill:muted},`${Math.round(v*100)}%`));
+  });
+
+  function drawDose(dose){
+    const sel=dose===state.dose;
+    const color=css(`--dose${dose}`);
+    const pts1=[],pts2=[];
+    const startH=state.intakeMin/60;
+    // Segment 1: intake -> 24:00
+    for(let m=state.intakeMin;m<=1440;m+=5){
+      const h=m/60, dt=(m-state.intakeMin)/60;
+      pts1.push(`${x(h).toFixed(1)},${y(doseRel40(dt,dose,state.meal)).toFixed(1)}`);
+    }
+    // Segment 2: 00:00 -> just before next occurrence of intake (next day continuation)
+    for(let m=0;m<=state.intakeMin;m+=5){
+      const h=m/60, dt=(1440-state.intakeMin+m)/60;
+      pts2.push(`${x(h).toFixed(1)},${y(doseRel40(dt,dose,state.meal)).toFixed(1)}`);
+    }
+    [pts1,pts2].forEach(pts=>{
+      if(pts.length<2)return;
+      svg.appendChild(svgEl("polyline",{points:pts.join(" "),fill:"none",stroke:color,"stroke-width":sel?4:1.7,opacity:sel?1:.44,"stroke-linecap":"round","stroke-linejoin":"round"}));
+    });
+  }
+  [10,20,30,40].filter(d=>d!==state.dose).forEach(drawDose);
+  drawDose(state.dose);
+
+  function marker(clockMin,label,sub,color=accent){
+    const h=(clockMin%1440)/60;
+    svg.appendChild(svgEl("line",{x1:x(h),y1:T,x2:x(h),y2:T+PH,stroke:color,"stroke-width":1.4,"stroke-dasharray":"6 5",opacity:.9}));
+    svg.appendChild(svgEl("circle",{cx:x(h),cy:T+8,r:4,fill:color}));
+    svg.appendChild(svgEl("text",{x:x(h),y:T+24,"text-anchor":"middle","font-size":10.5,"font-weight":"700",fill:text},label));
+    if(sub)svg.appendChild(svgEl("text",{x:x(h),y:T+38,"text-anchor":"middle","font-size":9.5,fill:muted},sub));
+  }
+  marker(state.intakeMin,fmtClock(state.intakeMin),"Einnahme");
+  marker(state.intakeMin+TM[state.meal]*60,fmtClock(state.intakeMin+TM[state.meal]*60),"Tmax");
+  marker(state.intakeMin+13*60,fmtClock(state.intakeMin+13*60),"+13 h");
+
+  const targetMin=parseClock(state.target);
+  marker(targetMin,state.target,"Zielzeit",css("--accent2"));
+
+  svg.appendChild(svgEl("text",{x:L+PW/2,y:H-7,"text-anchor":"middle","font-size":12,fill:text},"Uhrzeit (24-h-Skala)"));
+  svg.appendChild(svgEl("text",{x:16,y:T+PH/2,"text-anchor":"middle","font-size":11,fill:text,transform:`rotate(-90 16 ${T+PH/2})`},"relative Modell-Exposition · 40 mg = 100%-Referenz"));
+}
+
+function renderTarget(){
+  const tm=parseClock(state.target);
+  const dt=elapsedToClock(tm);
+  const own=ownRel(dt,state.meal)*100;
+  const ref=doseRel40(dt,state.dose,state.meal)*100;
+  let phase="";
+  if(dt < .75) phase="frühe Anflutphase";
+  else if(dt < TM[state.meal]) phase="ansteigende Phase vor Tmax";
+  else if(dt <= 13) phase="abfallende Phase innerhalb der 13-h-Orientierungsmarke";
+  else phase="späte Modellphase außerhalb der 13-h-Orientierungsmarke";
+
+  const nextDay = tm < state.intakeMin ? " (am Folgetag)" : "";
+  qs("#targetPct").textContent=`${own.toFixed(0)} %`;
+  qs("#targetDetail").innerHTML =
+    `Um <strong>${state.target}${nextDay}</strong> sind seit der Einnahme etwa <strong>${dt.toFixed(1)} Stunden</strong> vergangen. `+
+    `Das Modell liegt dann bei <strong>${own.toFixed(0)} % des Peaks der gewählten ${state.dose}-mg-Dosis</strong> `+
+    `und bei <strong>${ref.toFixed(0)} % der 40-mg-Referenzhöhe</strong>. Einordnung: <strong>${phase}</strong>.`;
+}
+
+function findDescendingTime(targetFraction){
+  const t0=TM[state.meal];
+  let lo=t0, hi=48;
+  if(ownRel(hi,state.meal) > targetFraction) return null;
+  for(let i=0;i<80;i++){
+    const mid=(lo+hi)/2;
+    if(ownRel(mid,state.meal)>targetFraction) lo=mid; else hi=mid;
+  }
+  return (lo+hi)/2;
+}
+function reverseCalc(){
+  const pct=Number(qs("#desiredPct").value);
+  const target=parseClock(state.target);
+  const dt=findDescendingTime(pct/100);
+  if(dt==null){
+    qs("#reverseResult").textContent="Für diesen Wert wurde im 48-Stunden-Suchbereich kein abfallender Schnittpunkt gefunden.";
+    return;
+  }
+  const intake=target-dt*60;
+  const dayOffset=Math.floor(intake/1440);
+  const clock=fmtClock(intake);
+  const within13=dt<=13;
+  let when="";
+  if(dayOffset===0) when="am selben Tag";
+  else if(dayOffset===-1) when="am Vortag";
+  else if(dayOffset<-1) when=`${Math.abs(dayOffset)} Tage zuvor`;
+  else when="am Folgetag";
+  qs("#reverseResult").innerHTML =
+    `<strong>${pct} %</strong> auf der abfallenden Modellkurve werden nach etwa <strong>${dt.toFixed(1)} Stunden</strong> erreicht. `+
+    `Für Ziel <strong>${state.target}</strong> entspräche das rechnerisch einer Einnahme um <strong>${clock}</strong> ${when}. `+
+    (within13 ? `<span class="warn">Der Schnittpunkt liegt innerhalb von 13 Stunden.</span>` :
+                `<span class="danger">Der Schnittpunkt liegt außerhalb der 13-h-Orientierungsmarke.</span>`) +
+    `<br><span class="small muted">Dies ist eine mathematische Rückrechnung, keine Einnahmeempfehlung.</span>`;
+}
+
+
+const OBS_KEY = "elvanse24planner_observations_v1";
+let observations = [];
+
+function localDateISO(){
+  const d=new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+function getNum(selector){
+  const v=qs(selector).value.trim().replace(",",".");
+  if(v==="") return "";
+  const n=Number(v);
+  return Number.isFinite(n)?n:"";
+}
+function modelPctAtTarget(){
+  const tm=parseClock(state.target);
+  return ownRel(elapsedToClock(tm),state.meal)*100;
+}
+function updateObservationContext(){
+  const el=qs("#obsContext");
+  if(!el)return;
+  el.textContent=`Übernahme: ${fmtClock(state.intakeMin)} · ${state.dose} mg · ${selectedMealText()} · Tmax ${fmtClock(state.intakeMin+TM[state.meal]*60)} · Ziel ${state.target} ≈ ${modelPctAtTarget().toFixed(0)} % Modell-Peak.`;
+}
+function bindRating(inputSel,outputSel){
+  const inp=qs(inputSel),out=qs(outputSel);
+  const sync=()=>out.textContent=inp.value;
+  inp.addEventListener("input",sync); sync();
+}
+function loadObservations(){
+  try{
+    const a=JSON.parse(localStorage.getItem(OBS_KEY)||"[]");
+    observations=Array.isArray(a)?a:[];
+  }catch(e){ observations=[]; }
+}
+function persistObservations(){
+  try{ localStorage.setItem(OBS_KEY,JSON.stringify(observations)); return true; }
+  catch(e){ return false; }
+}
+function renderObservations(){
+  const body=qs("#obsTableBody");
+  if(!body)return;
+  body.innerHTML="";
+  const sorted=[...observations].sort((a,b)=>(b.date||"").localeCompare(a.date||"") || (b.savedAt||"").localeCompare(a.savedAt||""));
+  sorted.forEach(r=>{
+    const tr=document.createElement("tr");
+    const vals=[r.date,r.intake,`${r.dose} mg`,r.mealLabel,r.modelPeak,r.model13,r.target,`${Number(r.modelTargetPct).toFixed(0)} %`,
+      r.feltOnset,r.feltPeak,r.feltFade,r.effectOverall,r.focus,r.selfControl,r.seAppetite,r.seSleep,r.seDryMouth,
+      r.weightKg,r.pulse,(r.bpSys||r.bpDia)?`${r.bpSys||""}/${r.bpDia||""}`:""];
+    vals.forEach(v=>{const td=document.createElement("td");td.textContent=v??"";tr.appendChild(td);});
+    const notes=document.createElement("td");notes.className="notes";notes.textContent=r.notes||"";tr.appendChild(notes);
+    const td=document.createElement("td");
+    const del=document.createElement("button");del.type="button";del.className="icon-btn";del.textContent="Löschen";
+    del.addEventListener("click",()=>{
+      observations=observations.filter(x=>x.id!==r.id);
+      persistObservations();renderObservations();qs("#obsStatus").textContent="Tagesdatensatz gelöscht.";
+    });
+    td.appendChild(del);tr.appendChild(td);body.appendChild(tr);
+  });
+  qs("#obsCount").textContent=`${observations.length} ${observations.length===1?"Datensatz":"Datensätze"}`;
+  renderAnalytics();
+}
+function saveObservation(){
+  const date=qs("#obsDate").value||localDateISO();
+  const rec={
+    id:`${date}_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
+    savedAt:new Date().toISOString(),date,
+    intake:fmtClock(state.intakeMin),intakeMinutes:state.intakeMin,dose:state.dose,
+    meal:state.meal,mealLabel:selectedMealText(),modelTmaxHours:TM[state.meal],
+    modelPeak:fmtClock(state.intakeMin+TM[state.meal]*60),model13:fmtClock(state.intakeMin+13*60),
+    target:state.target,modelTargetPct:Number(modelPctAtTarget().toFixed(1)),
+    feltOnset:qs("#feltOnset").value||"",feltPeak:qs("#feltPeak").value||"",feltFade:qs("#feltFade").value||"",
+    effectOverall:Number(qs("#effectOverall").value),focus:Number(qs("#focusRating").value),selfControl:Number(qs("#selfControlRating").value),
+    seAppetite:Number(qs("#seAppetite").value),seSleep:Number(qs("#seSleep").value),seDryMouth:Number(qs("#seDryMouth").value),
+    weightKg:getNum("#weightKg"),pulse:getNum("#pulse"),bpSys:getNum("#bpSys"),bpDia:getNum("#bpDia"),
+    notes:qs("#obsNotes").value.trim()
+  };
+  observations.push(rec);
+  const ok=persistObservations();
+  renderObservations();
+  qs("#obsStatus").textContent=ok?`Tagesdatensatz für ${date} lokal gespeichert.`:"Datensatz in dieser Sitzung gespeichert; dauerhafte lokale Speicherung ist in diesem Browser nicht verfügbar.";
+}
+function csvEscape(v){ return `"${(v??"").toString().replace(/"/g,'""')}"`; }
+function exportObservationsCsv(){
+  if(!observations.length){qs("#obsStatus").textContent="Noch keine Tagesdatensätze zum Export vorhanden.";return;}
+  const headers=["Datum","Einnahmezeit","Dosis_mg","Aufnahme","Modell_Tmax_h","Modell_Tmax_Uhrzeit","Modell_13h_Uhrzeit","Zielzeit",
+    "Modellwert_an_Zielzeit_Prozent_vom_Dosispeak","Wirkungseintritt_empfunden","Wirkungsgipfel_empfunden","Nachlassen_empfunden",
+    "Gesamtwirkung_0_10","Fokus_0_10","Steuerbarkeit_0_10","Verminderter_Appetit_0_3","Schlafstoerungen_0_3","Mundtrockenheit_0_3",
+    "Gewicht_kg","Puls_pro_min","Blutdruck_syst_mmHg","Blutdruck_diast_mmHg","Tagesnotiz","Gespeichert_am"];
+  const rows=[...observations].sort((a,b)=>(a.date||"").localeCompare(b.date||"")).map(r=>[
+    r.date,r.intake,r.dose,r.mealLabel,r.modelTmaxHours,r.modelPeak,r.model13,r.target,r.modelTargetPct,
+    r.feltOnset,r.feltPeak,r.feltFade,r.effectOverall,r.focus,r.selfControl,r.seAppetite,r.seSleep,r.seDryMouth,
+    r.weightKg,r.pulse,r.bpSys,r.bpDia,r.notes,r.savedAt]);
+  const csv="\uFEFF"+[headers,...rows].map(row=>row.map(csvEscape).join(";")).join("\r\n");
+  const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`mediApp_Neurodivergenz_Dokumentation_${localDateISO()}.csv`;
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  qs("#obsStatus").textContent=`CSV mit ${observations.length} Tagesdatensätzen exportiert (UTF-8, Semikolon; Excel-kompatibel).`;
+}
+function initObservation(){
+  qs("#obsDate").value=localDateISO();
+  bindRating("#effectOverall","#effectOverallOut");
+  bindRating("#focusRating","#focusRatingOut");
+  bindRating("#selfControlRating","#selfControlRatingOut");
+  qs("#saveObservation").addEventListener("click",saveObservation);
+  qs("#exportCsv").addEventListener("click",exportObservationsCsv);
+  qs("#clearObservations").addEventListener("click",()=>{
+    if(!observations.length){qs("#obsStatus").textContent="Die Dokumentation ist bereits leer.";return;}
+    if(window.confirm("Alle gespeicherten Tagesdatensätze auf diesem Gerät wirklich löschen?")){
+      observations=[];persistObservations();renderObservations();qs("#obsStatus").textContent="Alle Tagesdatensätze wurden gelöscht.";
+    }
+  });
+  loadObservations();renderObservations();updateObservationContext();
+}
+
+
+let analyticsDays=7;
+
+function latestObservationPerDate(){
+  const map=new Map();
+  observations.forEach(r=>{
+    const old=map.get(r.date);
+    if(!old || String(r.savedAt||"")>String(old.savedAt||"")) map.set(r.date,r);
+  });
+  return [...map.values()].sort((a,b)=>(a.date||"").localeCompare(b.date||""));
+}
+function dateToUtcMs(s){
+  const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||"");
+  if(!m)return NaN;
+  return Date.UTC(Number(m[1]),Number(m[2])-1,Number(m[3]));
+}
+function analyticsRows(){
+  const all=latestObservationPerDate();
+  if(!all.length)return [];
+  const latestMs=Math.max(...all.map(r=>dateToUtcMs(r.date)).filter(Number.isFinite));
+  const minMs=latestMs-(analyticsDays-1)*86400000;
+  return all.filter(r=>{
+    const ms=dateToUtcMs(r.date);
+    return Number.isFinite(ms) && ms>=minMs && ms<=latestMs;
+  });
+}
+function avg(vals){
+  const a=vals.map(Number).filter(Number.isFinite);
+  return a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
+}
+function minutesBetweenClock(start,end){
+  if(!start||!end)return null;
+  const a=parseClock(start),b=parseClock(end);
+  let d=b-a;
+  if(d<0)d+=1440;
+  return d;
+}
+function fmtDuration(mins){
+  if(!Number.isFinite(mins))return "—";
+  const h=Math.floor(mins/60),m=Math.round(mins%60);
+  return h?`${h} h ${m} min`:`${m} min`;
+}
+function shortDate(iso){
+  const p=String(iso||"").split("-");
+  return p.length===3?`${p[2]}.${p[1]}.`:iso;
+}
+function renderAnalyticsChart(rows){
+  const svg=qs("#analyticsChart");
+  if(!svg)return;
+  while(svg.firstChild)svg.removeChild(svg.firstChild);
+  const W=940,H=290,L=48,R=18,T=22,B=48,PW=W-L-R,PH=H-T-B;
+  const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const border=css("--border"),muted=css("--muted"),text=css("--text");
+  const series=[
+    {key:"effectOverall",label:"Gesamtwirkung",color:css("--dose40")},
+    {key:"focus",label:"Fokus",color:css("--dose30")},
+    {key:"selfControl",label:"Steuerbarkeit",color:css("--dose20")}
+  ];
+  const n=Math.max(rows.length,2);
+  const x=i=>L+(i/(n-1))*PW;
+  const y=v=>T+PH-(Math.max(0,Math.min(10,Number(v)))/10)*PH;
+
+  svg.appendChild(svgEl("rect",{x:L,y:T,width:PW,height:PH,rx:8,fill:css("--panel2")}));
+  [0,2,4,6,8,10].forEach(v=>{
+    svg.appendChild(svgEl("line",{x1:L,y1:y(v),x2:L+PW,y2:y(v),stroke:border,"stroke-width":1,opacity:.7}));
+    svg.appendChild(svgEl("text",{x:L-8,y:y(v)+4,"text-anchor":"end","font-size":10.5,fill:muted},String(v)));
+  });
+
+  rows.forEach((r,i)=>{
+    svg.appendChild(svgEl("text",{x:x(i),y:H-22,"text-anchor":"middle","font-size":9.5,fill:muted},shortDate(r.date)));
+  });
+
+  series.forEach(s=>{
+    const pts=rows.map((r,i)=>`${x(i).toFixed(1)},${y(r[s.key]).toFixed(1)}`);
+    if(pts.length>1)svg.appendChild(svgEl("polyline",{points:pts.join(" "),fill:"none",stroke:s.color,"stroke-width":2.6,"stroke-linecap":"round","stroke-linejoin":"round"}));
+    rows.forEach((r,i)=>svg.appendChild(svgEl("circle",{cx:x(i),cy:y(r[s.key]),r:3.3,fill:s.color})));
+  });
+
+  let lx=L;
+  series.forEach(s=>{
+    svg.appendChild(svgEl("line",{x1:lx,y1:11,x2:lx+16,y2:11,stroke:s.color,"stroke-width":3}));
+    svg.appendChild(svgEl("text",{x:lx+21,y:14,"font-size":10.5,fill:text},s.label));
+    lx+=135;
+  });
+}
+function renderAnalytics(){
+  const empty=qs("#analyticsEmpty"),content=qs("#analyticsContent");
+  if(!empty||!content)return;
+  qsa("#analyticsPeriods [data-days]").forEach(b=>b.classList.toggle("active",Number(b.dataset.days)===analyticsDays));
+  const rows=analyticsRows();
+  if(rows.length<2){
+    empty.hidden=false;content.hidden=true;return;
+  }
+  empty.hidden=true;content.hidden=false;
+  qs("#akDays").textContent=String(rows.length);
+  const effect=avg(rows.map(r=>r.effectOverall)),focus=avg(rows.map(r=>r.focus));
+  qs("#akEffect").textContent=effect==null?"—":effect.toFixed(1);
+  qs("#akFocus").textContent=focus==null?"—":focus.toFixed(1);
+
+  const onsetDelays=rows.map(r=>minutesBetweenClock(r.intake,r.feltOnset)).filter(Number.isFinite);
+  const onsetAvg=avg(onsetDelays);
+  qs("#akOnset").textContent=fmtDuration(onsetAvg);
+
+  const fx=[
+    ["seAppetite","#fxAppetiteVal","#fxAppetiteBar"],
+    ["seSleep","#fxSleepVal","#fxSleepBar"],
+    ["seDryMouth","#fxDryVal","#fxDryBar"]
+  ];
+  fx.forEach(([key,valSel,barSel])=>{
+    const v=avg(rows.map(r=>r[key]));
+    qs(valSel).textContent=v==null?"—":`${v.toFixed(1)} / 3`;
+    qs(barSel).style.width=v==null?"0%":`${Math.max(0,Math.min(100,(v/3)*100))}%`;
+  });
+
+  renderAnalyticsChart(rows);
+
+  const fadeDelays=rows.map(r=>minutesBetweenClock(r.intake,r.feltFade)).filter(Number.isFinite);
+  const fadeAvg=avg(fadeDelays);
+  const doses=[...new Set(rows.map(r=>r.dose))].sort((a,b)=>a-b);
+  qs("#analyticsHint").textContent=
+    `Ø empfundenes Nachlassen: ${fmtDuration(fadeAvg)} nach Einnahme`+
+    (doses.length?` · dokumentierte Dosen im Zeitraum: ${doses.join(", ")} mg`:"")+
+    `. Die Darstellung beschreibt Beobachtungen und keine individuelle Dosierungsempfehlung.`;
+}
+function initAnalytics(){
+  qsa("#analyticsPeriods [data-days]").forEach(b=>b.addEventListener("click",()=>{
+    analyticsDays=Number(b.dataset.days)||7;
+    renderAnalytics();
+  }));
+}
+
+
+function updateJourneyCards(){
+  const plan=qs("#journeyPlanSummary");
+  const obs=qs("#journeyObsSummary");
+  const trend=qs("#journeyTrendSummary");
+  if(plan){
+    plan.innerHTML=`Heute: <strong>${fmtClock(state.intakeMin)}</strong> · <strong>${state.dose} mg</strong> · ${selectedMealText()}<br>Zielzeit: <strong>${state.target}</strong> · Modellwert: <strong>${modelPctAtTarget().toFixed(0)} %</strong>`;
+  }
+  if(obs){
+    obs.textContent="Tageswerte mit Fokus auf Wirkung, Fokus, innere Ruhe und drei häufige Nebenwirkungen.";
+  }
+  if(trend){
+    trend.textContent=`${observations.length} gespeicherte Tagesdatensätze · CSV-Export direkt aus der App.`;
+  }
+}
+function bindQuickButton(id, fn){
+  const el=qs(id);
+  if(el) el.addEventListener("click", fn);
+}
+function scrollToSection(id){
+  const el=qs(id);
+  if(el) el.scrollIntoView({behavior:"smooth", block:"start"});
+}
+function initQuickUI(){
+  bindQuickButton("#journeyPlanBtn", ()=>scrollToSection("#planningSection"));
+  bindQuickButton("#journeyObsBtn", ()=>scrollToSection("#selfObservation"));
+  bindQuickButton("#journeyTrendBtn", ()=>scrollToSection("#analyticsSection"));
+  bindQuickButton("#journeyCsvBtn", ()=>exportObservationsCsv());
+  bindQuickButton("#qbTop", ()=>window.scrollTo({top:0,behavior:"smooth"}));
+  bindQuickButton("#qbPlan", ()=>scrollToSection("#planningSection"));
+  bindQuickButton("#qbObs", ()=>scrollToSection("#selfObservation"));
+  bindQuickButton("#qbCsv", ()=>exportObservationsCsv());
+}
+
+function update(){
+  renderSummary();
+  renderChart();
+  renderTarget();
+  updateObservationContext();
+  updateJourneyCards();
+}
+
+qs("#intakeSlider").addEventListener("input",e=>{
+  state.intakeMin=Math.max(0,Math.min(1425,Number(e.target.value)||0));
+  update();
+});
+qsa("#quickTimes [data-time]").forEach(b=>b.addEventListener("click",()=>{
+  state.intakeMin=Number(b.dataset.time);
+  qs("#intakeSlider").value=String(state.intakeMin);
+  update();
+}));
+qsa("#doseButtons [data-dose]").forEach(b=>b.addEventListener("click",()=>{
+  state.dose=Number(b.dataset.dose); update();
+}));
+qsa("#mealButtons [data-meal]").forEach(b=>b.addEventListener("click",()=>{
+  state.meal=b.dataset.meal; update();
+}));
+qs("#targetTime").addEventListener("input",e=>{
+  state.target=e.target.value || "18:00"; update();
+});
+qs("#calcReverse").addEventListener("click",reverseCalc);
+
+qs("#saveBtn").addEventListener("click",()=>{
+  try{
+    localStorage.setItem("elvanse24planner",JSON.stringify(state));
+    qs("#storageStatus").textContent="Einstellungen wurden lokal auf diesem Gerät gespeichert.";
+  }catch(err){
+    qs("#storageStatus").textContent="Der Browser erlaubt hier keine lokale Speicherung. Die App funktioniert trotzdem.";
+  }
+});
+qs("#exportBtn").addEventListener("click",()=>{
+  const blob=new Blob([JSON.stringify({app:"mediApp Neurodivergenz (privat)",version:"1.3.5",state},null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="mediapp-neurodivergenz-einstellungen.json";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  qs("#storageStatus").textContent="Einstellungen wurden als JSON-Datei exportiert.";
+});
+qs("#resetBtn").addEventListener("click",()=>{
+  state.intakeMin=480; state.dose=20; state.meal="fasted"; state.target="18:00";
+  qs("#intakeSlider").value="480";
+  try{localStorage.removeItem("elvanse24planner")}catch(e){}
+  qs("#reverseResult").textContent="Zielzeit und Prozentwert wählen und berechnen.";
+  qs("#storageStatus").textContent="Einstellungen wurden zurückgesetzt.";
+  update();
+});
+
+try{
+  const saved=JSON.parse(localStorage.getItem("elvanse24planner")||"null");
+  if(saved && [10,20,30,40].includes(Number(saved.dose))){
+    state.intakeMin=Math.max(0,Math.min(1425,Number(saved.intakeMin)||480));
+    state.dose=Number(saved.dose);
+    state.meal=saved.meal==="fed"?"fed":"fasted";
+    state.target=/^\d\d:\d\d$/.test(saved.target||"")?saved.target:"18:00";
+    qs("#intakeSlider").value=String(state.intakeMin);
+    qs("#storageStatus").textContent="Lokal gespeicherte Einstellungen wurden geladen.";
+  }
+}catch(e){}
+
+try{
+  initAnalytics();
+  initObservation();
+  initQuickUI();
+  update();
+  renderAnalytics();
+}catch(err){
+  console.warn("mediApp initialisation fallback", err);
+  const app=document.querySelector(".app");
+  if(app){
+    const note=document.createElement("div");
+    note.className="notice";
+    if(!inEmbeddedPreview){ note.innerHTML="<strong>Hinweis:</strong> Einige interaktive Funktionen stehen in dieser Vorschau möglicherweise nicht vollständig zur Verfügung. Für den regulären Einsatz die App bitte direkt in Safari bzw. als installierte Web-App öffnen."; app.insertBefore(note, app.firstChild.nextSibling); }
+  }
+}
+
+if(!inEmbeddedPreview && "serviceWorker" in navigator && (location.protocol==="https:" || location.hostname==="localhost")){
+  navigator.serviceWorker.register("./sw.js").catch(()=>{});
+}
+})();
+</script>
+</body>
+</html>

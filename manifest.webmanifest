@@ -1,0 +1,22 @@
+{
+  "name": "mediApp Neurodivergenz (privat)",
+  "short_name": "mediApp",
+  "description": "mediApp Neurodivergenz (privat) – schnelle private Planungs-, Selbstbeobachtungs- und Dokumentationshilfe zur ELVANSE Medikation. Keine medizinische Empfehlung, keine Rechtswirkung.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FFF8E8",
+  "theme_color": "#F59E0B",
+  "lang": "de",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
