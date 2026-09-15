@@ -1,7 +1,7 @@
 {
   "name": "mediApp Neurodivergenz (privat)",
   "short_name": "mediApp",
-  "description": "mediApp Neurodivergenz (privat) – schnelle private Planungs-, Selbstbeobachtungs- und Dokumentationshilfe zur ELVANSE Medikation. Keine medizinische Empfehlung, keine Rechtswirkung.",
+  "description": "Private iPhone-PWA zur Planungs-, Selbstbeobachtungs- und Dokumentationshilfe zur ELVANSE Medikation. App-Entwicklung: Björn Dröscher.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#FFF8E8",
